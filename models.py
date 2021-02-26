@@ -1,3 +1,4 @@
+import numpy as np
 from initializer import *
 
 
@@ -62,8 +63,8 @@ class SequentialModel:
 
 
     def predict(self, X, Y):
-        AL = self.forward_prop(X, is_training=False)
-        prediction = (AL >= 0.5)
+        AL, _ = self.forward_prop(X, is_training=False)
+        prediction = AL >= 0.5
         accuracy = (np.sum(prediction * Y) + np.sum((1 - prediction) * (1 - Y))) / X.shape[1] * 100
         return prediction, accuracy
 

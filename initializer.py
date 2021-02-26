@@ -1,6 +1,6 @@
 import numpy as np
 
-
+# git_test
 # zero_init is only for logistic regression
 def zero_init(dim):
     curr, prev = dim

@@ -1,6 +1,7 @@
 import numpy as np
-from nn import SequentialModel
+from models import SequentialModel
 from layers import DenseLayer
+from regularizer import *
 import h5py
 
 # get datasets
@@ -23,12 +24,29 @@ print(f"x_test.shape: {x_test.shape}")
 print(f"y_test.shape: {y_test.shape}")
 
 
-# make model
-A = SequentialModel(layers=[
-    DenseLayer(dim=7, activation='relu'),
-    DenseLayer(dim=1, activation='sigmoid')
+reg = dropout(0.7)
+# # simple 2 layer model (input_dim, 7, 1)
+# print('Two layer model:')
+# two_layer_model = SequentialModel(layers=[
+#     DenseLayer(dim=7, activation='relu', regularizer=reg),
+#     DenseLayer(dim=1, activation='sigmoid')
+# ])
+#
+# two_layer_model.fit(x_train, y_train, num_iterations=1500)
+# pred, acc = two_layer_model.predict(x_test, y_test)
+# print(f'Two layer model\'s accuracy: {acc}')
+# print()
+
+
+print('Four layer model:')
+# four layer model
+four_layer_model = SequentialModel(layers=[
+    DenseLayer(dim=20, activation='relu', init_method='he', regularizer=reg),
+    DenseLayer(dim=7, activation='relu', init_method='he', regularizer=reg),
+    DenseLayer(dim=5, activation='relu', init_method='he'),
+    DenseLayer(dim=1, activation='sigmoid', init_method='he'),
 ])
 
-A.fit(x_train, y_train)
-pred, acc = A.predict(x_test, y_test)
-print(acc)
+four_layer_model.fit(x_train, y_train, learning_rate=0.005, num_iterations=1500)
+pred, acc = four_layer_model.predict(x_test, y_test)
+print(f'Four layer model\'s accuracy: {acc}')
