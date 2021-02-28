@@ -2,7 +2,7 @@ import numpy as np
 from activations import *
 
 class DenseLayer:
-    def __init__(self, dim, activation, init_method='random', regularizer=None):
+    def __init__(self, dim, activation, init_method='he', regularizer=None):
         self.dim = dim
         self.activation = activation
         self.init_method = init_method
@@ -21,16 +21,16 @@ class DenseLayer:
         Z = np.dot(self.W, A_prev) + self.b
 
         # about regularization
+        keep_prob = 1
         reg_cost = 0
         if is_training and self.regularizer is not None:
             reg, rate = self.regularizer
             if reg == 'l2':
+                lambd = rate
                 reg_cost += 1 / m * (rate / 2) * np.sum(self.W ** 2)
             elif reg == 'dropout':
+                keep_prob = rate
                 self.mask = (np.random.rand(Z.shape[0], Z.shape[1]) < rate).astype(int)
-        else:
-            self.mask = 1
-            rate = 1
 
         # forward prop
         if self.activation == 'sigmoid':
@@ -38,9 +38,10 @@ class DenseLayer:
         elif self.activation == 'relu':
             A = relu(Z)
 
-        A = A * self.mask / rate
+        if is_training:
+            A = A * self.mask / keep_prob
         self.cache = (A_prev, Z)
-        return A, reg_cost
+        return Z, A, reg_cost
 
 
     def layer_backward(self, dA):
@@ -48,15 +49,16 @@ class DenseLayer:
         m = dA.shape[1]
 
         dreg = 0
+        keep_prob = 1
         if self.regularizer is not None:
             reg, rate = self.regularizer
             if reg == 'l2':
-                dreg = rate / m * self.W
-        else:
-            rate = 1
-            self.mask = 1
+                lambd = rate
+                dreg = lambd / m * self.W
+            elif reg == 'dropout':
+                keep_prob = rate
 
-        dA = dA * self.mask / rate
+        dA = dA * self.mask / keep_prob
         if self.activation == 'sigmoid':
             dZ = dA * sigmoid_derivative(Z)
         elif self.activation == 'relu':
