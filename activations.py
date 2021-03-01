@@ -1,21 +1,25 @@
 import numpy as np
 
+class Activation:
+    pass
 
-def sigmoid(x):
-    a = 1 / (1 + np.exp(-x))
-    return a
+class Sigmoid(Activation):
+    def forward(self, x):
+        a = 1 / (1 + np.exp(-x))
+        return a
 
-def relu(x):
-    a = np.maximum(0, x)
-    return a
+    def backward(self, x):
+        s = self.forward(x)
+        d = s * (1 - s)
+        return d
 
-def sigmoid_derivative(x):
-    s = sigmoid(x)
-    d = s * (1 - s)
-    return d
+class Relu(Activation):
+    def forward(self, x):
+        a = np.maximum(0, x)
+        return a
 
-def relu_derivative(x):
-    d = x.copy()
-    d[d<=0] = 0
-    d[d>0] = 1
-    return d
+    def backward(self, x):
+        d = x.copy()
+        d[d <= 0] = 0
+        d[d > 0] = 1
+        return d
