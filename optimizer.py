@@ -46,7 +46,7 @@ class RMSprop(Optimizer):
         self.s_average = {}
         self.beta = beta
         self.epsilon = epsilon
-        self.t = 1
+        self.t = 0
 
     def update_parameters(self, layer, grads):
         # zero initialize for velocity of each parameters
