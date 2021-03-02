@@ -24,8 +24,7 @@ print(f"x_test.shape: {x_test.shape}")
 print(f"y_test.shape: {y_test.shape}")
 
 
-reg = dropout(0.7)
-# # simple 2 layer model (input_dim, 7, 1)
+# simple 2 layer model (input_dim, 7, 1)
 # print('Two layer model:')
 # two_layer_model = SequentialModel(layers=[
 #     DenseLayer(dim=7, activation='relu', regularizer=reg),
@@ -36,17 +35,32 @@ reg = dropout(0.7)
 # pred, acc = two_layer_model.predict(x_test, y_test)
 # print(f'Two layer model\'s accuracy: {acc}')
 # print()
-
-
-print('Four layer model:')
+#
+print()
+print('Four layer model with SGD :')
 # four layer model
-four_layer_model = SequentialModel(layers=[
-    DenseLayer(dim=20, activation='relu', init_method='he', regularizer=reg),
-    DenseLayer(dim=7, activation='relu', init_method='he', regularizer=reg),
-    DenseLayer(dim=5, activation='relu', init_method='he'),
-    DenseLayer(dim=1, activation='sigmoid', init_method='he'),
+four_layer_model_with_sgd = SequentialModel(layers=[
+    DenseLayer(dim=20, activation=Relu(), init_method='he', regularizer=None),
+    DenseLayer(dim=7, activation=Relu(), init_method='he', regularizer=None),
+    DenseLayer(dim=5, activation=Relu(), init_method='he'),
+    DenseLayer(dim=1, activation=Sigmoid(), init_method='he'),
 ])
 
-four_layer_model.fit(x_train, y_train, learning_rate=0.005, num_iterations=1500)
-pred, acc = four_layer_model.predict(x_test, y_test)
-print(f'Four layer model\'s accuracy: {acc}')
+sgd_costs = four_layer_model_with_sgd.fit(x_train, y_train, learning_rate=0.0001, epochs=1500, batch_size=70, optimizer=RMSprop())
+pred_sgd, acc_sgd = four_layer_model_with_sgd.predict(x_test, y_test)
+print(f'Four layer model with sgd\'s accuracy: {acc_sgd}')
+#
+# print()
+#
+# print('Four layer model with Adam:')
+# # four layer model
+# four_layer_model_with_adam = SequentialModel(layers=[
+#     DenseLayer(dim=20, activation=Relu(), init_method='he', regularizer=None),
+#     DenseLayer(dim=7, activation=Relu(), init_method='he', regularizer=None),
+#     DenseLayer(dim=5, activation=Relu(), init_method='he'),
+#     DenseLayer(dim=1, activation=Sigmoid(), init_method='he'),
+# ])
+#
+# adam_costs = four_layer_model_with_adam.fit(x_train, y_train, learning_rate=0.0001, epochs=1500, optimizer=Adam())
+# pred_adam, acc_adam = four_layer_model_with_adam.predict(x_test, y_test)
+# print(f'Four layer model with adam\'s accuracy: {acc_adam}')
